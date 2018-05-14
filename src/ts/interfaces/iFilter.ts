@@ -3,6 +3,7 @@ import {ColDef} from "../entities/colDef";
 import {IRowModel} from "./iRowModel";
 import {RowNode} from "../entities/rowNode";
 import {IComponent} from "./iComponent";
+import {Promise} from "../utils";
 
 export interface IFilter {
     /** This is used to show the filter icon in the header. If true, the filter icon will be shown. */
@@ -48,11 +49,19 @@ export interface IFilter {
     onFloatingFilterChanged ?(change: any): void;
 }
 
+export interface IFilterGroup extends IFilter{
+    onConditionChanged (): void;
+}
+
+
 export interface SerializedFilter {
     filterType: string;
 }
 
 export interface IFilterComp extends IFilter, IComponent<IFilterParams> {
+}
+
+export interface IFilterGroupComp extends IFilterGroup, IComponent<IFilterGroupParams> {
 }
 
 export interface IDoesFilterPassParams {
@@ -61,14 +70,9 @@ export interface IDoesFilterPassParams {
 }
 
 export interface IFilterParams {
-    clearButton?: boolean;
-    applyButton?: boolean;
-    newRowsAction?: string;
     column: Column;
     colDef: ColDef;
     rowModel: IRowModel;
-    filterChangedCallback: ()=> void;
-    filterModifiedCallback: ()=> void;
     valueGetter: (rowNode: RowNode) => any;
     doesRowPassOtherFilter: (rowNode: RowNode) => boolean;
     context: any;
@@ -76,4 +80,15 @@ export interface IFilterParams {
     filterOptions?: string[];
     defaultOption?: string;
     textFormatter?: (from: string)=>string;
+    filterConditionModifiedCallback: ()=> void;
+}
+
+
+export interface IFilterGroupParams {
+    createFilterCb :()=>Promise<IFilterComp>
+    filterChangedCallback: ()=> void;
+    filterModifiedCallback: ()=> void;
+    clearButton?: boolean;
+    applyButton?: boolean;
+    newRowsAction?: string;
 }

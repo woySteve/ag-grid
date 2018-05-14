@@ -73,7 +73,8 @@ export {OriginalColumnGroup} from "./dist/lib/entities/originalColumnGroup";
 export {RowNode} from "./dist/lib/entities/rowNode";
 
 // filter
-export {BaseFilter} from "./dist/lib/filter/baseFilter";
+export {BaseFilterComp} from "./dist/lib/filter/baseFilter";
+export {FilterGroupComp} from "./dist/lib/filter/filterGroupComp";
 export {DateFilter} from "./dist/lib/filter/dateFilter";
 export {FilterManager, FilterWrapper} from "./dist/lib/filter/filterManager";
 export {NumberFilter} from "./dist/lib/filter/numberFilter";

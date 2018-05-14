@@ -10,10 +10,17 @@ import {Autowired, Bean, Context, PostConstruct, PreDestroy} from "../context/co
 import {IRowModel} from "../interfaces/iRowModel";
 import {EventService} from "../eventService";
 import {ColumnEventType, Events, FilterChangedEvent, FilterModifiedEvent} from "../events";
-import {IDoesFilterPassParams, IFilterComp, IFilterParams} from "../interfaces/iFilter";
+import {
+    IDoesFilterPassParams,
+    IFilterComp,
+    IFilterGroupComp,
+    IFilterGroupParams,
+    IFilterParams
+} from "../interfaces/iFilter";
 import {ColDef, GetQuickFilterTextParams} from "../entities/colDef";
 import {GridApi} from "../gridApi";
 import {ComponentResolver} from "../components/framework/componentResolver";
+import {FilterGroupComp} from "./filterGroupComp";
 
 @Bean('filterManager')
 export class FilterManager {
@@ -401,7 +408,7 @@ export class FilterManager {
         return this.allFilters[column.getColId()];
     }
 
-    private createFilterInstance(column: Column, $scope: any): Promise<IFilterComp> {
+    private createFilterInstance(parentGroup: IFilterGroupComp, column: Column, $scope: any): Promise<IFilterComp> {
         let defaultFilter: string = 'agTextColumnFilter';
 
         if (this.gridOptionsWrapper.isEnterprise()) {
@@ -409,25 +416,15 @@ export class FilterManager {
         }
         let sanitisedColDef: ColDef = _.cloneObject(column.getColDef());
 
-        let event: FilterModifiedEvent = {
-            type: Events.EVENT_FILTER_MODIFIED,
-            api: this.gridApi,
-            columnApi: this.columnApi
-        };
-
-        let filterChangedCallback = this.onFilterChanged.bind(this);
-        let filterModifiedCallback = () => this.eventService.dispatchEvent(event);
-
         let params: IFilterParams = {
             column: column,
             colDef: sanitisedColDef,
             rowModel: this.rowModel,
-            filterChangedCallback: filterChangedCallback,
-            filterModifiedCallback: filterModifiedCallback,
             valueGetter: this.createValueGetter(column),
             context: this.gridOptionsWrapper.getContext(),
             doesRowPassOtherFilter: null,
-            $scope: $scope
+            $scope: $scope,
+            filterConditionModifiedCallback: ()=> parentGroup.onConditionChanged ()
         };
 
         return this.componentResolver.createAgGridComponent<IFilterComp>(
@@ -458,7 +455,34 @@ export class FilterManager {
 
         filterWrapper.scope = this.gridOptionsWrapper.isAngularCompileFilters() ? this.$scope.$new() : null;
 
-        filterWrapper.filterPromise = this.createFilterInstance(column, filterWrapper.scope);
+        let event: FilterModifiedEvent = {
+            type: Events.EVENT_FILTER_MODIFIED,
+            api: this.gridApi,
+            columnApi: this.columnApi
+        };
+
+        let filterChangedCallback = this.onFilterChanged.bind(this);
+        let filterModifiedCallback = () => this.eventService.dispatchEvent(event);
+
+        let params: IFilterGroupParams = {
+            filterChangedCallback: filterChangedCallback,
+            filterModifiedCallback: filterModifiedCallback,
+            createFilterCb: null,
+            applyButton: _.get(column.getColDef(), 'filterParams.applyButton', null),
+            clearButton: _.get(column.getColDef(), 'filterParams.clearButton', null),
+            newRowsAction: _.get(column.getColDef(), 'filterParams.newRowsAction', null)
+        };
+
+        filterWrapper.filterPromise = new Promise<IFilterComp>((resolve)=>resolve (
+            this.componentResolver.createInternalAgGridComponent(
+                FilterGroupComp,
+                params,
+                (params, component) => {
+                    params['createFilterCb'] = () => this.createFilterInstance(component, column, this.$scope);
+                    return params;
+                }
+            )
+        ));
 
         this.putIntoGui(filterWrapper);
 

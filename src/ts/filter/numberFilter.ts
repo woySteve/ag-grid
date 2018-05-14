@@ -1,8 +1,11 @@
 import {Utils as _} from "../utils";
-import {IFilterParams, SerializedFilter} from "../interfaces/iFilter";
+import {IDoesFilterPassParams, IFilterComp, SerializedFilter} from "../interfaces/iFilter";
 import {QuerySelector} from "../widgets/componentAnnotations";
-import {BaseFilter, Comparator, IScalarFilterParams, ScalarBaseFilter} from "./baseFilter";
-import {INumberFilterParams} from "./textFilter";
+import {IScalarFilterParams} from "./filterCondition";
+import {FilterTypes} from "./filterConsts";
+import {Comparator} from "./filterGroupComp";
+import {ComparableFilterHeaderType} from "./filterOptions";
+import {ScalarBaseFilter} from "./baseFilterCondition";
 
 export interface SerializedNumberFilter extends SerializedFilter {
     filter: number;
@@ -10,7 +13,11 @@ export interface SerializedNumberFilter extends SerializedFilter {
     type: string;
 }
 
-export class NumberFilter extends ScalarBaseFilter<number, INumberFilterParams, SerializedNumberFilter> {
+export interface INumberFilterParams extends IScalarFilterParams {
+    debounceMs?: number;
+}
+
+export class NumberFilter extends ScalarBaseFilter<number, INumberFilterParams, SerializedNumberFilter> implements IFilterComp {
     @QuerySelector('#filterNumberToPanel')
     private eNumberToPanel: HTMLElement;
 
@@ -21,20 +28,14 @@ export class NumberFilter extends ScalarBaseFilter<number, INumberFilterParams, 
     private eFilterToTextField: HTMLInputElement;
 
     private eFilterTextField: HTMLInputElement;
-    public static LESS_THAN = 'lessThan';//3;
 
     modelFromFloatingFilter(from: string): SerializedNumberFilter {
         return {
-            type: this.filter,
+            type: this.getFilterHeader().getCurrentOperator(),
             filter: Number(from),
             filterTo: this.filterNumberTo,
             filterType: 'number'
         };
-    }
-
-    public getApplicableFilterTypes(): string[] {
-        return [BaseFilter.EQUALS, BaseFilter.NOT_EQUAL, BaseFilter.LESS_THAN, BaseFilter.LESS_THAN_OR_EQUAL,
-            BaseFilter.GREATER_THAN, BaseFilter.GREATER_THAN_OR_EQUAL, BaseFilter.IN_RANGE];
     }
 
     public bodyTemplate(): string {
@@ -50,14 +51,12 @@ export class NumberFilter extends ScalarBaseFilter<number, INumberFilterParams, 
     }
 
     public initialiseFilterBodyUi() {
-        super.initialiseFilterBodyUi();
         this.filterNumber = null;
         this.eFilterTextField = this.queryForHtmlInputElement("#filterText");
 
-        let debounceMs = this.getDebounceMs(this.filterParams);
-        let toDebounce: ()=>void = _.debounce(this.onTextFieldsChanged.bind(this), debounceMs);
-        this.addDestroyableEventListener(this.eFilterTextField, "input", toDebounce);
-        this.addDestroyableEventListener(this.eFilterToTextField, "input", toDebounce);
+        this.addDestroyableEventListener(this.eFilterTextField, "input", this.onTextFieldsChanged.bind(this));
+        this.addDestroyableEventListener(this.eFilterToTextField, "input", this.onTextFieldsChanged.bind(this));
+        this.refreshFilterBodyUi();
     }
 
     public afterGuiAttached() {
@@ -83,7 +82,7 @@ export class NumberFilter extends ScalarBaseFilter<number, INumberFilterParams, 
     }
 
     public filterValues(): number|number[] {
-        return this.filter !== BaseFilter.IN_RANGE ?
+        return this.getFilterHeader().getCurrentOperator() !== FilterTypes.IN_RANGE ?
             this.asNumber(this.filterNumber):
             [this.asNumber(this.filterNumber), this.asNumber(this.filterNumberTo)];
     }
@@ -132,7 +131,7 @@ export class NumberFilter extends ScalarBaseFilter<number, INumberFilterParams, 
 
     public serialize(): SerializedNumberFilter {
         return {
-            type: this.filter ? this.filter : this.defaultFilter,
+            type: this.getFilterHeader().getCurrentOperator(),
             filter: this.filterNumber,
             filterTo: this.filterNumberTo,
             filterType: 'number'
@@ -140,23 +139,27 @@ export class NumberFilter extends ScalarBaseFilter<number, INumberFilterParams, 
     }
 
     public parse(model: SerializedNumberFilter): void {
-        this.setFilterType(model.type);
+        this.getFilterHeader().setFilterType(model.type);
         this.setFilter(model.filter);
         this.setFilterTo(model.filterTo);
     }
 
     public refreshFilterBodyUi(): void {
-        let visible = this.filter === NumberFilter.IN_RANGE;
+        let visible = this.getFilterHeader().getCurrentOperator() === FilterTypes.IN_RANGE;
         _.setVisible(this.eNumberToPanel, visible);
     }
 
     public resetState(): void {
-        this.setFilterType(this.defaultFilter);
+        this.getFilterHeader().resetFilterType();
         this.setFilter(null);
         this.setFilterTo(null);
     }
 
     public setType(filterType: string): void {
-        this.setFilterType(filterType);
+        this.getFilterHeader().setFilterType(filterType);
+    }
+
+    getFilterType(): ComparableFilterHeaderType {
+        return 'NUMBER';
     }
 }

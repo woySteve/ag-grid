@@ -1,11 +1,13 @@
 import {IFilterParams, SerializedFilter} from "../interfaces/iFilter";
 import {Component} from "../widgets/component";
-import {IDateParams, IDateComp} from "../rendering/dateComponent";
+import {IDateComp, IDateParams} from "../rendering/dateComponent";
 import {QuerySelector} from "../widgets/componentAnnotations";
-import {_, Utils} from "../utils";
-import {BaseFilter, Comparator, ScalarBaseFilter} from "./baseFilter";
+import {Utils} from "../utils";
 import {Autowired} from "../context/context";
 import {ComponentRecipes} from "../components/framework/componentRecipes";
+import {ScalarBaseFilter} from "./filterCondition";
+import {FilterTypes} from "./filterConsts";
+import {Comparator} from "./filterGroupComp";
 
 export interface IDateFilterParams extends IFilterParams {
     comparator?: IDateComparatorFunc;
@@ -39,6 +41,13 @@ export class DateFilter extends ScalarBaseFilter<Date, IDateFilterParams, Serial
 
     private dateTo: Date;
 
+    public init (params:IDateFilterParams):void{
+        this.setTemplate(this.bodyTemplate());
+        super.init(params);
+        this.initialiseFilterBodyUi();
+        this.refreshFilterBodyUi();
+    }
+
     public modelFromFloatingFilter(from: string): SerializedDateFilter {
         return {
             dateFrom: from,
@@ -49,7 +58,7 @@ export class DateFilter extends ScalarBaseFilter<Date, IDateFilterParams, Serial
     }
 
     public getApplicableFilterTypes(): string[] {
-        return [BaseFilter.EQUALS, BaseFilter.GREATER_THAN, BaseFilter.LESS_THAN, BaseFilter.NOT_EQUAL, BaseFilter.IN_RANGE];
+        return [FilterTypes.EQUALS, FilterTypes.GREATER_THAN, FilterTypes.LESS_THAN, FilterTypes.NOT_EQUAL, FilterTypes.IN_RANGE];
     }
 
     public bodyTemplate(): string {
@@ -96,7 +105,7 @@ export class DateFilter extends ScalarBaseFilter<Date, IDateFilterParams, Serial
     }
 
     public refreshFilterBodyUi(): void {
-        let visible = this.filter === BaseFilter.IN_RANGE;
+        let visible = this.filter === FilterTypes.IN_RANGE;
         Utils.setVisible(this.eDateToPanel, visible);
     }
 
@@ -122,7 +131,7 @@ export class DateFilter extends ScalarBaseFilter<Date, IDateFilterParams, Serial
     }
 
     public filterValues(): Date|Date[] {
-        return this.filter !== BaseFilter.IN_RANGE ?
+        return this.filter !== FilterTypes.IN_RANGE ?
             this.dateFromComponent.getDate() :
             [this.dateFromComponent.getDate(), this.dateToComponent.getDate()];
     }
