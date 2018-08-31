@@ -542,6 +542,14 @@ export class GridOptionsWrapper {
         return this.gridOptions.getRowClass;
     }
 
+    public getHeaderStyle() {
+        return this.gridOptions.headerStyle;
+    }
+
+    public getHeaderStyleFunc() {
+        return this.gridOptions.getHeaderStyle;
+    }
+
     public rowClassRules() {
         return this.gridOptions.rowClassRules;
     }

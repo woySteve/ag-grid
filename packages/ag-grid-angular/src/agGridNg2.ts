@@ -173,6 +173,7 @@ export class AgGridNg2 implements AfterViewInit {
     @Input() public components : any = undefined;
     @Input() public frameworkComponents : any = undefined;
     @Input() public rowStyle : any = undefined;
+    @Input() public headerStyle : any = undefined;
     @Input() public context : any = undefined;
     @Input() public autoGroupColumnDef : any = undefined;
     @Input() public groupColumnDef : any = undefined;
@@ -252,6 +253,7 @@ export class AgGridNg2 implements AfterViewInit {
     @Input() public getRowClass : any = undefined;
     @Input() public getRowStyle : any = undefined;
     @Input() public getRowClassRules : any = undefined;
+    @Input() public getHeaderStyle : any = undefined;
     @Input() public traverseNode : any = undefined;
     @Input() public getContextMenuItems : any = undefined;
     @Input() public getMainMenuItems : any = undefined;

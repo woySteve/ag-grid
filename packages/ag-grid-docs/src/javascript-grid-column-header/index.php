@@ -252,6 +252,29 @@ pivotGroupHeaderHeight:100,
 
     <?= example('Dynamic Header Height', 'dynamic-height', 'generated', array("enterprise" => 1)) ?>
 
+    <h2 id="header-styles">Header Styles</h2>
+    <p>
+        You can introduce inline styling to your headers using the following:
+    </p>
+    <ul>
+        <li><code>headerStyle: </code>Property to apply inline styles for all headers. Set to an object
+            of key (style names) and value (style values) pairs.
+        </li>
+        <li><code>getHeaderStyle: </code>Callback to set each header style individually.
+    </ul>
+
+<snippet>
+// set text colour on all headers
+gridOptions.headerStyle = {color: 'red'};
+
+// set background colour on only column group headers
+gridOptions.getHeaderStyle = function(params) {
+    if (params.group) {
+        return {background-color: 'grey'};
+    }
+}
+</snippet>
+
     <h2 id="customHeader">Custom Header</h2>
     <p>
         Header templates are meant to be used for simple UI customisation, if you need to have more control over the

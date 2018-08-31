@@ -79,12 +79,40 @@ export class HeaderGroupWrapperComp extends Component {
         this.addAttributes();
         this.setupMovingCss();
         this.setupTooltip();
+        this.processStylesFromGridOptions();
 
         this.addFeature(this.context, new HoverFeature(this.columnGroup.getOriginalColumnGroup().getLeafColumns(), this.getGui()));
 
         let setLeftFeature = new SetLeftFeature(this.columnGroup, this.getGui(), this.beans);
         setLeftFeature.init();
         this.addDestroyFunc(setLeftFeature.destroy.bind(setLeftFeature));
+    }
+
+    private processStylesFromGridOptions(): void {
+
+        // part 1 - headerStyle (key/value)
+        let headerStyle = this.gridOptionsWrapper.getHeaderStyle();
+        
+        if (headerStyle && typeof headerStyle === 'function') {
+            console.log('ag-Grid: headerStyle should be an object of key/value styles, not be a function, use getHeaderStyle() instead');
+            return;
+        }
+        
+        // part 2 - headerStyleFunc (callback)
+        let headerStyleFunc = this.gridOptionsWrapper.getHeaderStyleFunc();
+        let headerStyleFuncResult: any;
+        if (headerStyleFunc) {
+            let params = {
+                api: this.gridApi,
+                columnApi: this.columnApi,
+                column: this.columnGroup,
+                group: true
+            }
+            headerStyleFuncResult = headerStyleFunc(params);
+        }
+        
+        let allStyles = _.assign({}, headerStyle, headerStyleFuncResult);
+        _.addStylesToElement(this.getGui(), allStyles);
     }
 
     private setupMovingCss(): void {

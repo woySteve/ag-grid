@@ -88,6 +88,7 @@ export class HeaderWrapperComp extends Component {
         this.setupMenuClass();
         this.setupSortableClass(enableSorting);
         this.addColumnHoverListener();
+        this.processStylesFromGridOptions();
 
         this.addFeature(this.context, new HoverFeature([this.column], this.getGui()));
 
@@ -102,6 +103,33 @@ export class HeaderWrapperComp extends Component {
 
         this.addAttributes();
         CssClassApplier.addHeaderClassesFromColDef(this.column.getColDef(), this.getGui(), this.gridOptionsWrapper, this.column, null);
+    }
+
+    private processStylesFromGridOptions(): void {
+
+        // part 1 - headerStyle (key/value)
+        let headerStyle = this.gridOptionsWrapper.getHeaderStyle();
+        
+        if (headerStyle && typeof headerStyle === 'function') {
+            console.log('ag-Grid: headerStyle should be an object of key/value styles, not be a function, use getHeaderStyle() instead');
+            return;
+        }
+        
+        // part 2 - headerStyleFunc (callback)
+        let headerStyleFunc = this.gridOptionsWrapper.getHeaderStyleFunc();
+        let headerStyleFuncResult: any;
+        if (headerStyleFunc) {
+            let params = {
+                api: this.gridApi,
+                columnApi: this.columnApi,
+                column: this.column,
+                group: false
+            }
+            headerStyleFuncResult = headerStyleFunc(params);
+        }
+        
+        let allStyles = _.assign({}, headerStyle, headerStyleFuncResult);
+        _.addStylesToElement(this.getGui(), allStyles);
     }
 
     private addColumnHoverListener(): void {

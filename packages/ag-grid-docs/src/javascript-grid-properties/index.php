@@ -557,6 +557,10 @@ include '../documentation-main/documentation_header.php';
             <td>The style to give a particular row. See <a href="../javascript-grid-row-styles/#row-style">Row Style</a>.</td>
         </tr>
         <tr>
+            <th>headerStyle</th>
+            <td>The style to give a particular header. See <a href="../javascript-grid-column-header/#header-styles">Header Styles.</a></td>
+        </tr>
+        <tr>
             <th>rowClass</th>
             <td>The class to give a particular row. See <a href="../javascript-grid-row-styles/#row-class">Row Class</a>.</td>
         </tr>

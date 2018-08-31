@@ -277,6 +277,7 @@ export interface GridOptions {
     context?: any;
     rowStyle?: any;
     rowClass?: string | string[];
+    headerStyle?: any;
     groupDefaultExpanded?: number;
     slaveGrids?: GridOptions[]; // slaveGrids deprecated, replace with alignedGrids
     alignedGrids?: GridOptions[];
@@ -338,6 +339,7 @@ export interface GridOptions {
     isExternalFilterPresent?(): boolean;
     doesExternalFilterPass?(node: RowNode): boolean;
     getRowStyle?: Function;
+    getHeaderStyle?: Function;
     getRowClass?: (params: any) => (string | string[]);
     rowClassRules?: { [cssClassName: string]: (Function | string) };
     getRowHeight?: Function;
