@@ -51,7 +51,7 @@ export class XmlFactory {
     }
 
     private returnAttributeIfPopulated(key: string, value: any, booleanTransformer?:(currentValue:boolean)=>string) {
-        if (!value) {
+        if (!value && value !== '') {
             return '';
         }
 
