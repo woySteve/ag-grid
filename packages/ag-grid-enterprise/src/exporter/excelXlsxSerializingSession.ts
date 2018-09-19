@@ -1,11 +1,10 @@
 import {
     BaseGridSerializingSession,
     Column,
-    ColumnController,
     Constants,
     ExcelCell,
     ExcelColumn,
-    ExcelDataType,
+    ExcelOOXMLDataType,
     ExcelRow,
     ExcelStyle,
     ExcelWorksheet,
@@ -51,7 +50,7 @@ export class ExcelXlsxSerializingSession extends BaseGridSerializingSession<Exce
         const {sheetName, excelFactory, baseExcelStyles, styleLinker, suppressTextAsCDATA} = config;
 
         this.sheetName = sheetName;
-        this.excelFactory = <ExcelXlsxFactory>excelFactory;
+        this.excelFactory = excelFactory as ExcelXlsxFactory;
         this.baseExcelStyles = baseExcelStyles;
         this.styleLinker = styleLinker;
         this.suppressTextAsCDATA = suppressTextAsCDATA;
@@ -95,7 +94,7 @@ export class ExcelXlsxSerializingSession extends BaseGridSerializingSession<Exce
         return {
             onColumn: (header: string, index: number, span: number) => {
                 let styleIds: string[] = that.styleLinker(RowType.HEADER_GROUPING, 1, index, "grouping-" + header, null, null);
-                currentCells.push(that.createMergedCell(styleIds.length > 0 ? styleIds[0] : null, "String", header, span));
+                currentCells.push(that.createMergedCell(styleIds.length > 0 ? styleIds[0] : null, "inlineStr", header, span));
             }
         };
     }
@@ -123,7 +122,7 @@ export class ExcelXlsxSerializingSession extends BaseGridSerializingSession<Exce
         return (column: Column, index: number, node?: RowNode) => {
             let nameForCol = this.extractHeaderValue(column);
             let styleIds: string[] = that.styleLinker(RowType.HEADER, rowIndex, index, nameForCol, column, null);
-            currentCells.push(this.createCell(styleIds.length > 0 ? styleIds[0] : null, 'String', nameForCol));
+            currentCells.push(this.createCell(styleIds.length > 0 ? styleIds[0] : null, 'inlineStr', nameForCol));
         };
     }
 
@@ -166,7 +165,7 @@ export class ExcelXlsxSerializingSession extends BaseGridSerializingSession<Exce
                 }
                 excelStyleId = this.mixedStyles[key].excelID;
             }
-            let type: ExcelDataType = Utils.isNumeric(valueForCell) ? 'Number' : 'String';
+            let type: ExcelOOXMLDataType = Utils.isNumeric(valueForCell) ? 'n' : 'inlineStr';
             currentCells.push(that.createCell(excelStyleId, type, valueForCell));
         };
     }
@@ -202,25 +201,25 @@ export class ExcelXlsxSerializingSession extends BaseGridSerializingSession<Exce
         return this.stylesByIds[styleId];
     }
 
-    private createCell(styleId: string, type: ExcelDataType, value: string): ExcelCell {
+    private createCell(styleId: string, type: ExcelOOXMLDataType, value: string): ExcelCell {
         let actualStyle: ExcelStyle = this.stylesByIds[styleId];
         let styleExists: boolean = actualStyle != null;
 
-        function getType(): ExcelDataType {
+        function getType(): ExcelOOXMLDataType {
             if (
                 styleExists &&
                 actualStyle.dataType
             ) switch (actualStyle.dataType) {
                 case 'string':
-                    return 'String';
+                    return 'inlineStr';
                 case 'number':
-                    return 'Number';
+                    return 'n';
                 case 'dateTime':
-                    return 'DateTime';
+                    return 'd';
                 case 'error':
-                    return 'Error';
+                    return 'e';
                 case 'boolean':
-                    return 'Boolean';
+                    return 'b';
                 default:
                     console.warn(`ag-grid: Unrecognized data type for excel export [${actualStyle.id}.dataType=${actualStyle.dataType}]`);
             }
@@ -228,7 +227,7 @@ export class ExcelXlsxSerializingSession extends BaseGridSerializingSession<Exce
             return type;
         }
 
-        let typeTransformed: ExcelDataType = getType();
+        let typeTransformed: ExcelOOXMLDataType = getType();
 
         let massageText = (val:string) =>  this.suppressTextAsCDATA ? _.escape(val) : `<![CDATA[${val}]]>`;
 
@@ -237,14 +236,14 @@ export class ExcelXlsxSerializingSession extends BaseGridSerializingSession<Exce
             data: {
                 type: typeTransformed,
                 value:
-                    typeTransformed === 'String' ? massageText(value):
-                    typeTransformed === 'Number' ? Number(value).valueOf() + '' :
+                    typeTransformed === 'inlineStr' ? massageText(value):
+                    typeTransformed === 'n' ? Number(value).valueOf() + '' :
                     value
             }
         };
     }
 
-    private createMergedCell(styleId: string, type: ExcelDataType, value: string, numOfCells: number): ExcelCell {
+    private createMergedCell(styleId: string, type: ExcelOOXMLDataType, value: string, numOfCells: number): ExcelCell {
         return {
             styleId: this.styleExists(styleId) ? styleId : null,
             data: {
