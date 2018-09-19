@@ -378,6 +378,7 @@ export class AgGridNg2 implements AfterViewInit {
     @Input() public suppressScrollOnNewData : any = undefined;
     @Input() public purgeClosedRowNodes : any = undefined;
     @Input() public cacheQuickFilter : any = undefined;
+    @Input() public quickFilterSuppressHiddenColumns : any = undefined;
     @Input() public deltaRowDataMode : any = undefined;
     @Input() public ensureDomOrder : any = undefined;
     @Input() public accentedSort : any = undefined;

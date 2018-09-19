@@ -137,6 +137,12 @@ include '../documentation-main/documentation_header.php';
                     quick filter cache</a>, used for a performance gain when using the quick filter.</td>
         </tr>
         <tr>
+            <th>quickFilterSuppressHiddenColumns</th>
+            <td>Set to true to disable quick filter from filtering by hidden column values. See 
+                <a href="../javascript-grid-filter-quick#ignoring-hidden-columns">Ignoring Hidden Columns</a>
+            </td>
+        </tr>
+        <tr>
             <th>sortingOrder</th>
             <td>
                 Array defining the order in which sorting occurs (if sorting is enabled). Values can be <code>asc</code>,

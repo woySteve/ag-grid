@@ -129,4 +129,12 @@ colDef = {
     replicate Quick Filter functionality.
 </p>
 
+<h2>Ignoring Hidden Columns</h2>
+
+<p>
+    You may notice that when using the Quick Filter, by default it will still take into account 
+    columns that may be hidden - however, this could produce undesirable results. You can prevent 
+    the Quick Filter from doing this by setting <code>quickFilterSuppressHiddenColumns = true</code> on the gridOptions.
+</p>
+
 <?php include '../documentation-main/documentation_footer.php';?>

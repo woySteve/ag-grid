@@ -510,6 +510,10 @@ export class GridOptionsWrapper {
         return isTrue(this.gridOptions.cacheQuickFilter);
     }
 
+    public isQuickFilterSuppressHiddenColumns() {
+        return isTrue(this.gridOptions.quickFilterSuppressHiddenColumns);
+    }
+
     public isUnSortIcon() {
         return isTrue(this.gridOptions.unSortIcon);
     }

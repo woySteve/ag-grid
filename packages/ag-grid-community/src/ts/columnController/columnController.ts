@@ -2632,11 +2632,12 @@ export class ColumnController {
     // b) using tree data and user depends on autoGroupCol for first col, and we also want to filter on this
     //    (tree data is a bit different, as parent rows can be filtered on, unlike row grouping)
     private setupQuickFilterColumns(): void {
-        if (this.groupAutoColumns) {
-            this.columnsForQuickFilter = this.primaryColumns.concat(this.groupAutoColumns);
-        } else {
-            this.columnsForQuickFilter = this.primaryColumns;
-        }
+        let filterHiddenCols = !this.gridOptionsWrapper.isQuickFilterSuppressHiddenColumns();
+        let filterColumns = filterHiddenCols ? 
+            this.primaryColumns : this.primaryColumns.filter(col => col.isVisible());
+
+        this.columnsForQuickFilter = this.groupAutoColumns ? 
+            filterColumns.concat(this.groupAutoColumns) : filterColumns;
     }
 
     private putFixedColumnsFirst(): void {

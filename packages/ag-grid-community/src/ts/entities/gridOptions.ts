@@ -167,6 +167,7 @@ export interface GridOptions {
     enableCellChangeFlash?: boolean;
     quickFilterText?: string;
     cacheQuickFilter?: boolean;
+    quickFilterSuppressHiddenColumns?: boolean;
     aggFuncs?: {[key: string]: IAggFunc};
     suppressColumnVirtualisation?: boolean;
     functionsReadOnly?: boolean;
