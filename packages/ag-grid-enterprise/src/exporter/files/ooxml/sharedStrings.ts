@@ -11,7 +11,13 @@ const buildSharedString = (textNode: string): XmlElement => ({
 const sharedStrings: ExcelOOXMLTemplate = {
     getTemplate(strings: string[]) {
         return {
-            name: "sheets",
+            name: "sst",
+            properties: {
+                rawMap: {
+                    count: strings.length,
+                    uniqueCount: strings.length
+                }
+            },
             children: _.map(strings, buildSharedString)
         };
     }
