@@ -9,7 +9,7 @@ const sheet: ExcelOOXMLTemplate = {
                     "state": "visible",
                     "name": "Sheet1",
                     "sheetId": "1",
-                    "r:id": "rId3"
+                    "r:id": "rId1"
                 }
             }
         };

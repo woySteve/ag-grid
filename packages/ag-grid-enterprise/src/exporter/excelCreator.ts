@@ -156,13 +156,16 @@ export class ExcelCreator extends BaseCreator<ExcelCell[][], SerializingSession,
         const xlsxFactory = this.xlsxFactory;
 
         return zip.sync(() => {
-            const xl = zip.folder('xl');
-            xl.file('workbook.xml', xlsxFactory.workbook());
-            xl.file('_rels/workbook.xml.rels', xlsxFactory.workbookRels());
             zip.file('_rels/.rels', xlsxFactory.rels());
+            zip.file('docProps/core.xml', xlsxFactory.core());
             zip.file('[Content_Types].xml', xlsxFactory.contentTypes());
 
+            const xl = zip.folder('xl');
+
+            xl.file('_rels/workbook.xml.rels', xlsxFactory.workbookRels());
+            xl.file('theme/theme1.xml', xlsxFactory.theme());
             xl.file('worksheets/sheet1.xml', data);
+            xl.file('workbook.xml', xlsxFactory.workbook());
 
             let zipped;
 
