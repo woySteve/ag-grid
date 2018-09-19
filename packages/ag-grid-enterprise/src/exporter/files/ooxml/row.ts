@@ -1,11 +1,10 @@
-import {Utils} from 'ag-grid-community';
-import {ExcelOOXMLTemplate, ExcelRow} from 'ag-grid-community';
+import {ExcelOOXMLTemplate, ExcelRow, _} from 'ag-grid-community';
 import cell from './cell';
 
 const row: ExcelOOXMLTemplate = {
     getTemplate(config: ExcelRow) {
         const {index, collapsed, hidden, height, outlineLevel, s, cells = []} = config;
-        const children = Utils.map(cells, cell.getTemplate);
+        const children = _.map(cells, cell.getTemplate);
         return {
             name: "row",
             properties: {

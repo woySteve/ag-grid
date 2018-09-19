@@ -1,11 +1,10 @@
-import {Utils} from 'ag-grid-community';
-import {ExcelOOXMLTemplate} from 'ag-grid-community';
+import {ExcelOOXMLTemplate, _} from 'ag-grid-community';
 import contentType from './contentType';
 
 const contentTypes: ExcelOOXMLTemplate = {
     getTemplate() {
 
-        const children = Utils.map([{
+        const children = _.map([{
             name: 'Default',
             Extension: 'rels',
             ContentType: 'application/vnd.openxmlformats-package.relationships+xml'

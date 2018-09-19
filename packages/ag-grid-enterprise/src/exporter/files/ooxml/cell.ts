@@ -1,5 +1,4 @@
-import {Utils} from 'ag-grid-community';
-import {ExcelOOXMLTemplate, ExcelCell} from 'ag-grid-community';
+import {ExcelOOXMLTemplate, ExcelCell, _} from 'ag-grid-community';
 
 const cell: ExcelOOXMLTemplate = {
     getTemplate(config: ExcelCell) {
@@ -33,7 +32,7 @@ const cell: ExcelOOXMLTemplate = {
             }];
         }
 
-        return Utils.assign({}, obj, { children });
+        return _.assign({}, obj, { children });
     }
 };
 

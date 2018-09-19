@@ -1,4 +1,4 @@
-import {ExcelOOXMLTemplate, XmlElement} from 'ag-grid-community';
+import {ExcelOOXMLTemplate, XmlElement, _} from 'ag-grid-community';
 
 const buildSharedString = (textNode: string): XmlElement => ({
     name: 'si',
@@ -12,7 +12,7 @@ const sharedStrings: ExcelOOXMLTemplate = {
     getTemplate(strings: string[]) {
         return {
             name: "sheets",
-            children: strings.map(buildSharedString)
+            children: _.map(strings, buildSharedString)
         };
     }
 };

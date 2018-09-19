@@ -1,10 +1,9 @@
-import {Utils} from 'ag-grid-community';
-import {ExcelOOXMLTemplate, ExcelRelationship} from 'ag-grid-community';
+import {ExcelOOXMLTemplate, ExcelRelationship, _} from 'ag-grid-community';
 import relationship from './relationship';
 
 const relationships: ExcelOOXMLTemplate = {
     getTemplate(c: ExcelRelationship[]) {
-        const children = Utils.map(c, relationship.getTemplate);
+        const children = _.map(c, relationship.getTemplate);
 
         return {
             name: "Relationships",

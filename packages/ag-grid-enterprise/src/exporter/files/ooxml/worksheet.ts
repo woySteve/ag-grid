@@ -1,5 +1,4 @@
-import {Utils} from 'ag-grid-community';
-import {ExcelOOXMLTemplate, ExcelWorksheet} from 'ag-grid-community';
+import {ExcelOOXMLTemplate, ExcelWorksheet, _} from 'ag-grid-community';
 import column from './column';
 import row from './row';
 
@@ -11,12 +10,12 @@ const worksheet: ExcelOOXMLTemplate = {
         const children = [].concat(
             columns.length ? {
                 name: 'cols',
-                children: Utils.map(columns, column.getTemplate)
+                children: _.map(columns, column.getTemplate)
             } : []
         ).concat(
             rows.length ? {
                 name: 'sheetData',
-                children: Utils.map(rows, row.getTemplate)
+                children: _.map(rows, row.getTemplate)
             } : []
         );
 
